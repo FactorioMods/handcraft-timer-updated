@@ -1,6 +1,8 @@
+local migration_state = require("migration-state")
 local mod_gui = require("mod-gui")
 
-global.playerCraftTime = global.playerCraftTime or {}
+script.on_init(function() if not migration_state.adopt() then storage.playerCraftTime = {} end end)
+script.on_configuration_changed(function() migration_state.adopt() end)
 
 -- Because of my supreme laziness this is a modified version of: https://stackoverflow.com/a/45376848
 function FormatTime(time)
@@ -31,7 +33,7 @@ function GetCraftTime(player)
     local craftTime = 0.0
     
     for i, qItem in ipairs(queue) do
-        local recipe = game.recipe_prototypes[qItem.recipe]
+        local recipe = prototypes.recipe[qItem.recipe]
         local qItemCraftTime = recipe.energy * qItem.count / (1.0 + player.force.manual_crafting_speed_modifier + player.character_crafting_speed_modifier)
         craftTime = craftTime + qItemCraftTime
 
@@ -47,12 +49,12 @@ end
 
 -- This will get a player's craft time and assign it to them
 function SetPlayerCraftTime(player)
-    global.playerCraftTime = global.playerCraftTime or {}
-    global.playerCraftTime[player.index] = GetCraftTime(player)
+    storage.playerCraftTime = storage.playerCraftTime or {}
+    storage.playerCraftTime[player.index] = GetCraftTime(player)
 end
 
 function GetPlayerCraftTime(player)
-    local cT = global.playerCraftTime[player.index] or 0.0
+    local cT = storage.playerCraftTime[player.index] or 0.0
     if cT < 0.0 then cT = 0.0 end
     return cT
 end
@@ -61,19 +63,21 @@ end
 function DecrementPlayerCraftTime(player)
     local cT = GetPlayerCraftTime(player)
     if cT > 0.0 then
-        global.playerCraftTime[player.index] = cT - (1.0 / 60.0) -- TODO: Test this during poor UPS
+        storage.playerCraftTime[player.index] = cT - (1.0 / 60.0) -- TODO: Test this during poor UPS
     end
 end
 
 function RemoveOldEl(player)
-    if global.player_time_text and global.player_time_text[player.index] then
-        rendering.destroy(global.player_time_text[player.index])
-        global.player_time_text[player.index] = nil
+    if storage.player_time_text and storage.player_time_text[player.index] then
+        local old = storage.player_time_text[player.index]
+        if type(old) == "number" then old = rendering.get_object_by_id(old) end
+        if old and old.valid then old.destroy() end
+        storage.player_time_text[player.index] = nil
     end
 end
 
 function PrintCraftTime()
-    global.playerCraftTime = global.playerCraftTime or {}
+    storage.playerCraftTime = storage.playerCraftTime or {}
     local elName = "craft_time"
 
     -- Go back to using the for loop to make this multiplayer compatible

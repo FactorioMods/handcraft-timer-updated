@@ -1,9 +1,15 @@
 {
-  "name": "handcraft_timer",
-  "version": "0.4.8",
-  "title": "HandCraft Timer",
-  "author": "SirHall",
-  "factorio_version": "1.1",
-  "dependencies": ["base >= 1.1"],
-  "description": "Calculates the time remaining when crafting by hand"
+  "name": "handcraft-timer-updated",
+  "version": "0.4.9",
+  "title": "HandCraft Timer: Updated",
+  "author": "SirHall; johnmart19 / FactorioMods (Factorio 2.1 compatibility)",
+  "factorio_version": "2.1",
+  "dependencies": [
+    "base >= 2.1.24",
+    "! handcraft_timer"
+  ],
+  "description": "Factorio 2.1 compatibility port with native legacy save ownership migration. Calculates the time remaining when crafting by hand",
+  "migrates_from": [
+    "handcraft_timer"
+  ]
 }

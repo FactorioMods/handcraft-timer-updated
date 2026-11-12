@@ -1,0 +1,6 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.4.9
+Date: 2026-11-12
+  Changes:
+    - Update persistent storage, prototype lookup and rendering APIs; preserve player crafting timers across native ownership migration.
+    - Add native ownership migration from the original mod identity while preserving existing saved state.
